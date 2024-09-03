@@ -7,8 +7,10 @@ WORKDIR /app
 # Install cron and other necessary packages
 RUN apt-get update && apt-get install -y cron
 
-# Copy the requirements file and install dependencies
+# Copy the requirements file
 COPY requirements.txt .
+
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the cron file and script
@@ -25,4 +27,4 @@ RUN crontab /etc/cron.d/crontab
 RUN service cron stop && touch /var/log/cron.log
 
 # Run the script once at container startup and then start cron in the foreground
-CMD ["sh", "-c", "python /app/app.py && cron -f"]
+CMD ["sh", "-c", "python /app/app.py TASK=startup && cron && tail -f /var/log/cron.log"]
