@@ -69,27 +69,15 @@ def clear_blocklist(instance):
     except Exception as e:
         logger.error(f"An unexpected error occurred while clearing blocklist on {instance['url']}: {e}")
 
-def main_startup():
-    logger.info("Starting script execution at container startup")
-    for instance in RADARR_INSTANCES:
-        logger.info(f"Processing instance: {instance['url']}")
-        trigger_search(instance)
-        clear_blocklist(instance)
-    logger.info("Container startup script execution completed")
-
 def main():
     task = os.getenv('TASK', 'search')
     logger.info(f"Running task: {task}")
     
-    if task == 'startup':
-        main_startup()
-    elif task == 'search':
-        for instance in RADARR_INSTANCES:
-            logger.info(f"Processing instance: {instance['url']}")
+    for instance in RADARR_INSTANCES:
+        logger.info(f"Processing instance: {instance['url']}")
+        if task == 'search':
             trigger_search(instance)
-    elif task == 'clear_blocklist':
-        for instance in RADARR_INSTANCES:
-            logger.info(f"Processing instance: {instance['url']}")
+        elif task == 'clear_blocklist':
             clear_blocklist(instance)
     logger.info("Script execution completed")
 
