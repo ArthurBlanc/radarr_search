@@ -1,33 +1,30 @@
-# Use a base image with Python installed
+# Use a minimal Python image
 FROM python:3.11-slim
 
-# Set working directory
+# Set the working directory
 WORKDIR /app
 
 # Install cron
-RUN apt-get update && apt-get install -y cron
+RUN apt-get update && \
+    apt-get install -y cron && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Copy the requirements file
+# Copy the requirements file and install dependencies
 COPY requirements.txt .
-
-# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the cron file and script
-COPY crontab /etc/cron.d/crontab
-COPY app.py .
+# Copy the application files
+COPY . .
 
-# List the contents of the cron file
-RUN cat /etc/cron.d/crontab
+# Add a cron job
+RUN echo "*/5 * * * * root python3 /app/your_script.py >> /var/log/cron.log 2>&1" > /etc/cron.d/your-cron-job
 
-# Verify cron job syntax
-RUN crontab -l
+# Give execution rights on the cron job
+RUN chmod 0644 /etc/cron.d/your-cron-job
 
-# Give execution rights on the cron job file
-RUN chmod 0644 /etc/cron.d/crontab
+# Apply cron job
+RUN crontab /etc/cron.d/your-cron-job
 
-# Try to install cron jobs
-RUN crontab /etc/cron.d/crontab
-
-# Start cron and execute the Python script at container start
-CMD cron && python /app/app.py TASK=startup
+# Run cron in the foreground
+CMD ["cron", "-f"]
