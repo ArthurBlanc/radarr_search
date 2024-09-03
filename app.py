@@ -32,9 +32,13 @@ def get_blocklist(instance):
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
-        blocklist = response.json()
-        logger.info(f"Fetched blocklist from {instance['url']}: {blocklist}")
-        return [item['id'] for item in blocklist]  # Adjust based on actual response structure
+        blocklist_data = response.json()
+        logger.info(f"Fetched blocklist from {instance['url']}: {blocklist_data}")
+
+        # Extract IDs from the 'records' field
+        blocklist_ids = [item['id'] for item in blocklist_data.get('records', [])]  # Adjust based on actual response structure
+        logger.info(f"Blocklist IDs: {blocklist_ids}")
+        return blocklist_ids
     except requests.exceptions.HTTPError as http_err:
         logger.error(f"HTTP error occurred while fetching blocklist on {instance['url']} at {datetime.datetime.now()}: {http_err}")
     except requests.exceptions.RequestException as req_err:
