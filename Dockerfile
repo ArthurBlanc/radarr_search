@@ -26,8 +26,8 @@ RUN crontab /etc/cron.d/crontab
 # Install dotenv package
 RUN pip install python-dotenv
 
-# Create log directory and file
-RUN mkdir -p /var/log && touch /var/log/cron.log
+# Create log directory
+RUN mkdir -p /var/log
 
-# Start cron and output logs
-CMD ["sh", "-c", "cron && tail -f /var/log/cron.log"]
+# Start cron and pipe logs to stdout/stderr
+CMD ["sh", "-c", "cron && tail -f /var/log/cron.log /app/app.py.log"]
