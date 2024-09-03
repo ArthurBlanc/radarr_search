@@ -27,4 +27,4 @@ RUN crontab /etc/cron.d/crontab
 RUN service cron stop && touch /var/log/cron_search.log /var/log/cron_clear_blocklist.log
 
 # Run the script once at container startup and then start cron in the foreground
-CMD ["sh", "-c", "python /app/app.py TASK=startup && cron && tail -f /var/log/cron_search.log /var/log/cron_clear_blocklist.log"]
+CMD ["sh", "-c", "TASK=startup python /app/app.py && cron && tail -f /var/log/cron_search.log /var/log/cron_clear_blocklist.log"]
