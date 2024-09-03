@@ -131,7 +131,7 @@ def main_startup():
 def main():
     task = os.getenv('TASK', 'search')
     logger.info(f"Running task: {task}")
-    
+
     if task == 'startup':
         main_startup()
     elif task == 'search':
@@ -144,7 +144,11 @@ def main():
         for instance in RADARR_INSTANCES:
             logger.info(f"Processing instance: {instance['url']}")
             clear_blocklist(instance)
+    else:
+        logger.error(f"Unknown task: {task}")
+
     logger.info("Script execution completed")
+
 
 if __name__ == "__main__":
     main()
