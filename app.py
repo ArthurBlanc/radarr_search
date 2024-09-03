@@ -81,7 +81,7 @@ def main_startup():
 def main():
     task = os.getenv('TASK', 'search')
     logger.info(f"Running task: {task}")
-    
+
     if task == 'startup':
         logger.info("Running startup tasks")
         main_startup()
@@ -98,6 +98,7 @@ def main():
     else:
         logger.error(f"Unknown task specified: {task}")
     logger.info("Script execution completed")
+
 
 if __name__ == "__main__":
     main()
