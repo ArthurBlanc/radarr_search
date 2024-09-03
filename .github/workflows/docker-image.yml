@@ -12,10 +12,14 @@ jobs:
 
     steps:
       - name: 'Checkout code'
-        uses: actions/checkout@v4  # Ensure using the latest version
+        uses: actions/checkout@v4  # Ensure using the latest stable version
 
       - name: 'Login to GitHub Container Registry'
-        uses: docker/login-action@v2  # Latest stable version
+        uses: docker/login-action@v2  # Ensure using the latest stable version
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 'Build and Push Docker Image'
         run: |
