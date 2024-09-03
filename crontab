@@ -1,5 +1,5 @@
 # Run the Python script every hour at 30 minutes past the hour
-30 * * * * python /app/app.py >> /var/log/cron.log 2>&1
+# 30 * * * * python /app/app.py >> /var/log/cron.log 2>&1
 
 # Run the Python script to clear the blocklist every week on Sunday at midnight
 0 0 * * 0 python /app/app.py >> /var/log/cron.log 2>&1
