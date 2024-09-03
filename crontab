@@ -1,4 +1,4 @@
 # Every hour at 30 minutes past the hour
-30 * * * * TASK=search python /app/app.py >> /var/log/cron.log 2>&1
+30 * * * * TASK=search python /app/app.py >> /var/log/cron_search.log 2>&1
 # Every Wednesday at 3 AM
-0 3 * * 3 TASK=clear_blocklist python /app/app.py >> /var/log/cron.log 2>&1
+0 3 * * 3 TASK=clear_blocklist python /app/app.py >> /var/log/cron_clear_blocklist.log 2>&1
