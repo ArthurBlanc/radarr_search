@@ -29,8 +29,5 @@ RUN touch /var/log/cron.log
 # Apply cron job
 RUN crontab /etc/cron.d/crontab
 
-# Install dotenv package
-RUN pip install python-dotenv
-
 # Run the script once and then start cron in the foreground, logging output
 CMD ["sh", "-c", "python /app/app.py >> /var/log/cron.log 2>&1 && cron -f"]
