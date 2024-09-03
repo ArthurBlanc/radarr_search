@@ -29,5 +29,8 @@ RUN touch /var/log/cron.log
 # Apply cron job
 RUN crontab /etc/cron.d/crontab
 
-# Run the script once and then start cron in the foreground, logging output
-CMD ["sh", "-c", "python /app/app.py >> /var/log/cron.log 2>&1 && cron -f"]
+# Run the script once at container startup
+RUN python /app/app.py >> /var/log/cron.log 2>&1
+
+# Start cron and keep the container running
+CMD ["sh", "-c", "cron && tail -f /var/log/cron.log"]
