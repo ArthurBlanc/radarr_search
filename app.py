@@ -8,7 +8,6 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.StreamHandler()  # Logs to stdout
-        # You can add FileHandler if you want to log to a file
     ]
 )
 
