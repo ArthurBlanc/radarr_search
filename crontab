@@ -1,1 +1,2 @@
+30 * * * * TASK=search python /app/app.py >> /var/log/cron.log 2>&1
 0 3 * * 3 TASK=clear_blocklist python /app/app.py >> /var/log/cron.log 2>&1
