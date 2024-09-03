@@ -14,6 +14,13 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+# Fetch environment variables
+RADARR_INSTANCES = [
+    {"url": os.getenv("RADARR_URL_1"), "api_key": os.getenv("RADARR_API_KEY_1")},
+    {"url": os.getenv("RADARR_URL_2"), "api_key": os.getenv("RADARR_API_KEY_2")},
+    {"url": os.getenv("RADARR_URL_3"), "api_key": os.getenv("RADARR_API_KEY_3")}
+]
+
 def get_blocklist(instance):
     """Fetch the blocklist from Radarr."""
     logger.info(f"Fetching blocklist from {instance['url']} at {datetime.datetime.now()}")
@@ -72,8 +79,7 @@ def clear_blocklist(instance):
     logger.info(f"Finished blocklist clearance for {instance['url']} at {datetime.datetime.now()}")
 
 def trigger_search(instance):
-    """Trigger a search for missing movies."""
-    logger.info(f"Starting search trigger for {instance['url']}")
+    logger.info(f"Starting search trigger for {instance['url']} at {datetime.datetime.now()}")
     url = f"{instance['url']}/api/v3/command"
     headers = {
         "Content-Type": "application/json",
@@ -92,14 +98,13 @@ def trigger_search(instance):
             response_json = response.json()
             logger.error(f"Failed to trigger search on {instance['url']}: {response.status_code}, {response_json}")
     except requests.exceptions.HTTPError as http_err:
-        logger.error(f"HTTP error occurred while triggering search on {instance['url']}: {http_err}")
+        logger.error(f"HTTP error occurred while triggering search on {instance['url']} at {datetime.datetime.now()}: {http_err}")
     except requests.exceptions.RequestException as req_err:
-        logger.error(f"Request error occurred while triggering search on {instance['url']}: {req_err}")
+        logger.error(f"Request error occurred while triggering search on {instance['url']} at {datetime.datetime.now()}: {req_err}")
     except Exception as e:
-        logger.error(f"An unexpected error occurred while triggering search on {instance['url']}: {e}")
+        logger.error(f"An unexpected error occurred while triggering search on {instance['url']} at {datetime.datetime.now()}: {e}")
 
 def main_startup():
-    """Run both search and blocklist clearance tasks at startup."""
     logger.info("Starting script execution at container startup")
     for instance in RADARR_INSTANCES:
         logger.info(f"Processing instance: {instance['url']}")
@@ -108,7 +113,6 @@ def main_startup():
     logger.info("Container startup script execution completed")
 
 def main():
-    """Determine and run the task specified by the TASK environment variable."""
     task = os.getenv('TASK', 'search')
     logger.info(f"Running task: {task}")
     
