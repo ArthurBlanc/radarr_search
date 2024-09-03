@@ -20,14 +20,11 @@ COPY app.py .
 # Give execution rights on the cron job file
 RUN chmod 0644 /etc/cron.d/crontab
 
-# Create log directory
-RUN mkdir -p /var/log
-
-# Ensure the log file is created
-RUN touch /var/log/cron.log
-
 # Apply cron job
 RUN crontab /etc/cron.d/crontab
 
-# Run the script once at container startup and then start cron in the foreground, logging output
+# Ensure cron service is not running initially and set up log file
+RUN service cron stop && touch /var/log/cron.log
+
+# Run the script once at container startup and then start cron in the foreground
 CMD ["sh", "-c", "python /app/app.py >> /var/log/cron.log 2>&1 && cron && tail -f /var/log/cron.log"]
