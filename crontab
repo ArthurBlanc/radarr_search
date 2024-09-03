@@ -1,1 +1,2 @@
+# Run the Python script every hour at 30 minutes past the hour
 30 * * * * python /app/app.py >> /var/log/cron.log 2>&1
