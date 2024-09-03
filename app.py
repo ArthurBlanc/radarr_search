@@ -22,26 +22,42 @@ RADARR_INSTANCES = [
 ]
 
 def get_blocklist(instance):
-    """Fetch the blocklist from Radarr."""
-    logger.info(f"Fetching blocklist from {instance['url']} at {datetime.datetime.now()}")
-    url = f"{instance['url']}/api/v3/blocklist"
-    headers = {
-        "X-Api-Key": instance['api_key']
-    }
-
-    try:
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-        blocklist = response.json()
-        logger.info(f"Fetched blocklist from {instance['url']}: {blocklist}")
-        return [item['id'] for item in blocklist.get('records', [])]  # Extract IDs from the 'records' field
-    except requests.exceptions.HTTPError as http_err:
-        logger.error(f"HTTP error occurred while fetching blocklist on {instance['url']} at {datetime.datetime.now()}: {http_err}")
-    except requests.exceptions.RequestException as req_err:
-        logger.error(f"Request error occurred while fetching blocklist on {instance['url']} at {datetime.datetime.now()}: {req_err}")
-    except Exception as e:
-        logger.error(f"An unexpected error occurred while fetching blocklist on {instance['url']} at {datetime.datetime.now()}: {e}")
-    return []
+    """Fetch the entire blocklist from Radarr, handling pagination."""
+    blocklist_ids = []
+    page = 1
+    while True:
+        logger.info(f"Fetching blocklist from {instance['url']} at page {page} at {datetime.datetime.now()}")
+        url = f"{instance['url']}/api/v3/blocklist"
+        headers = {
+            "X-Api-Key": instance['api_key']
+        }
+        params = {
+            "page": page,
+            "pageSize": 100,  # Adjust pageSize based on API limits
+            "sortKey": "date",
+            "sortDirection": "descending"
+        }
+        
+        try:
+            response = requests.get(url, headers=headers, params=params)
+            response.raise_for_status()
+            blocklist = response.json()
+            logger.info(f"Fetched blocklist from {instance['url']}: {blocklist}")
+            records = blocklist.get('records', [])
+            if not records:
+                break  # Exit loop if no more records
+            blocklist_ids.extend(item['id'] for item in records)
+            page += 1  # Move to next page
+        except requests.exceptions.HTTPError as http_err:
+            logger.error(f"HTTP error occurred while fetching blocklist on {instance['url']} at page {page} at {datetime.datetime.now()}: {http_err}")
+            break
+        except requests.exceptions.RequestException as req_err:
+            logger.error(f"Request error occurred while fetching blocklist on {instance['url']} at page {page} at {datetime.datetime.now()}: {req_err}")
+            break
+        except Exception as e:
+            logger.error(f"An unexpected error occurred while fetching blocklist on {instance['url']} at page {page} at {datetime.datetime.now()}: {e}")
+            break
+    return blocklist_ids
 
 def clear_blocklist(instance):
     """Clear the blocklist items using bulk deletion."""
