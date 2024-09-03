@@ -29,5 +29,5 @@ RUN pip install python-dotenv
 # Create log directory
 RUN mkdir -p /var/log
 
-# Start cron and pipe logs to stdout/stderr
-CMD ["sh", "-c", "cron && tail -f /var/log/cron.log /app/app.py.log"]
+# Run the script once on container start and then start cron
+CMD ["sh", "-c", "python /app/app.py && cron && tail -f /var/log/cron.log"]
