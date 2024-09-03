@@ -20,14 +20,17 @@ COPY app.py .
 # Give execution rights on the cron job file
 RUN chmod 0644 /etc/cron.d/crontab
 
+# Create log directory
+RUN mkdir -p /var/log
+
+# Ensure the log file is created
+RUN touch /var/log/cron.log
+
 # Apply cron job
 RUN crontab /etc/cron.d/crontab
 
 # Install dotenv package
 RUN pip install python-dotenv
 
-# Create log directory
-RUN mkdir -p /var/log
-
-# Run the script and then start cron in the foreground
-CMD ["sh", "-c", "python /app/app.py && cron -f"]
+# Run the script once and then start cron in the foreground, logging output
+CMD ["sh", "-c", "python /app/app.py >> /var/log/cron.log 2>&1 && cron -f"]
