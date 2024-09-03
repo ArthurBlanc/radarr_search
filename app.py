@@ -83,15 +83,20 @@ def main():
     logger.info(f"Running task: {task}")
     
     if task == 'startup':
+        logger.info("Running startup tasks")
         main_startup()
     elif task == 'search':
+        logger.info("Running search tasks")
         for instance in RADARR_INSTANCES:
             logger.info(f"Processing instance: {instance['url']}")
             trigger_search(instance)
     elif task == 'clear_blocklist':
+        logger.info("Running clear blocklist tasks")
         for instance in RADARR_INSTANCES:
             logger.info(f"Processing instance: {instance['url']}")
             clear_blocklist(instance)
+    else:
+        logger.error(f"Unknown task specified: {task}")
     logger.info("Script execution completed")
 
 if __name__ == "__main__":
