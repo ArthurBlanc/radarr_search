@@ -21,7 +21,7 @@ RADARR_INSTANCES = [
 ]
 
 def trigger_search(instance):
-    logger.info(f"Starting search trigger for {instance['url']}")  # Log starting of trigger
+    logger.info(f"Starting search trigger for {instance['url']}")
     url = f"{instance['url']}/api/v3/command"
     headers = {
         "Content-Type": "application/json",
@@ -47,11 +47,11 @@ def trigger_search(instance):
         logger.error(f"An unexpected error occurred while triggering search on {instance['url']}: {e}")
 
 def main():
-    logger.info("Starting script execution")  # Log when script starts
+    logger.info("Starting script execution")
     for instance in RADARR_INSTANCES:
-        logger.info(f"Processing instance: {instance['url']}")  # Log each instance being processed
+        logger.info(f"Processing instance: {instance['url']}")
         trigger_search(instance)
-    logger.info("Script execution completed")  # Log when script ends
+    logger.info("Script execution completed")
 
 if __name__ == "__main__":
     main()
