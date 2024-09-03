@@ -14,16 +14,9 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# Fetch environment variables
-RADARR_INSTANCES = [
-    {"url": os.getenv("RADARR_URL_1"), "api_key": os.getenv("RADARR_API_KEY_1")},
-    {"url": os.getenv("RADARR_URL_2"), "api_key": os.getenv("RADARR_API_KEY_2")},
-    {"url": os.getenv("RADARR_URL_3"), "api_key": os.getenv("RADARR_API_KEY_3")}
-]
-
 def get_blocklist(instance):
-    """Fetch the current blocklist."""
-    logger.info(f"Fetching blocklist from {instance['url']}")
+    """Fetch the blocklist from Radarr."""
+    logger.info(f"Fetching blocklist from {instance['url']} at {datetime.datetime.now()}")
     url = f"{instance['url']}/api/v3/blocklist"
     headers = {
         "X-Api-Key": instance['api_key']
@@ -32,13 +25,9 @@ def get_blocklist(instance):
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
-        blocklist_data = response.json()
-        logger.info(f"Fetched blocklist from {instance['url']}: {blocklist_data}")
-
-        # Extract IDs from the 'records' field
-        blocklist_ids = [item['id'] for item in blocklist_data.get('records', [])]  # Adjust based on actual response structure
-        logger.info(f"Blocklist IDs: {blocklist_ids}")
-        return blocklist_ids
+        blocklist = response.json()
+        logger.info(f"Fetched blocklist from {instance['url']}: {blocklist}")
+        return [item['id'] for item in blocklist.get('records', [])]  # Extract IDs from the 'records' field
     except requests.exceptions.HTTPError as http_err:
         logger.error(f"HTTP error occurred while fetching blocklist on {instance['url']} at {datetime.datetime.now()}: {http_err}")
     except requests.exceptions.RequestException as req_err:
@@ -48,27 +37,25 @@ def get_blocklist(instance):
     return []
 
 def clear_blocklist(instance):
-    """Clear the blocklist using bulk delete."""
+    """Clear the blocklist items using bulk deletion."""
     logger.info(f"Starting blocklist clearance for {instance['url']} at {datetime.datetime.now()}")
-    url = f"{instance['url']}/api/v3/blocklist/bulk"
-    headers = {
-        "Content-Type": "application/json",
-        "X-Api-Key": instance['api_key']
-    }
-    
-    # Step 1: Fetch current blocklist
     blocklist_ids = get_blocklist(instance)
+    
     if not blocklist_ids:
         logger.info(f"No blocklist items to clear on {instance['url']}")
         return
-    
-    # Step 2: Define the request body with the list of IDs
+
+    url = f"{instance['url']}/api/v3/blocklist/bulk"
+    headers = {
+        "X-Api-Key": instance['api_key'],
+        "Content-Type": "application/json"
+    }
     data = {
         "ids": blocklist_ids
     }
 
     try:
-        response = requests.post(url, headers=headers, json=data)
+        response = requests.delete(url, headers=headers, json=data)
         response.raise_for_status()
         if response.status_code == 200:
             logger.info(f"Successfully cleared blocklist on {instance['url']}")
@@ -81,8 +68,8 @@ def clear_blocklist(instance):
         logger.error(f"Request error occurred while clearing blocklist on {instance['url']} at {datetime.datetime.now()}: {req_err}")
     except Exception as e:
         logger.error(f"An unexpected error occurred while clearing blocklist on {instance['url']} at {datetime.datetime.now()}: {e}")
-    finally:
-        logger.info(f"Finished blocklist clearance for {instance['url']} at {datetime.datetime.now()}")
+
+    logger.info(f"Finished blocklist clearance for {instance['url']} at {datetime.datetime.now()}")
 
 def trigger_search(instance):
     """Trigger a search for missing movies."""
