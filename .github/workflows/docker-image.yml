@@ -29,7 +29,7 @@ jobs:
         with:
           context: .  # Contexte de la construction Docker (répertoire actuel)
           push: true  # Pousse l'image vers GHCR
-          tags: ghcr.io/${{ github.repository_owner }}/radarr_search:latest  # Tags de l'image
+          tags: ghcr.io/arthurblanc/radarr_search:latest  # Tags de l'image
         env:
           DOCKER_BUILDKIT: 1
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Utilise le jeton GitHub pour l'authentification
