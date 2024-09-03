@@ -24,7 +24,7 @@ RUN chmod 0644 /etc/cron.d/crontab
 RUN crontab /etc/cron.d/crontab
 
 # Ensure cron service is not running initially and set up log file
-RUN service cron stop && touch /var/log/cron_search.log /var/log/cron_clear_blocklist.log
+RUN service cron stop && touch /var/log/cron_search.log && touch /var/log/cron_clear_blocklist.log
 
 # Run the script once at container startup and then start cron in the foreground
-CMD ["sh", "-c", "TASK=startup python /app/app.py && cron && tail -f /var/log/cron_search.log /var/log/cron_clear_blocklist.log"]
+CMD ["sh", "-c", "TASK=startup python /app/app.py && cron && tail -f /var/log/cron_search.log && tail -f /var/log/cron_clear_blocklist.log"]
