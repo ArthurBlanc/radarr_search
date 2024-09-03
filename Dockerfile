@@ -4,7 +4,7 @@ FROM python:3.11-slim
 # Set working directory
 WORKDIR /app
 
-# Install cron
+# Install cron and other necessary packages
 RUN apt-get update && apt-get install -y cron
 
 # Copy the requirements file
@@ -26,5 +26,8 @@ RUN crontab /etc/cron.d/crontab
 # Install dotenv package
 RUN pip install python-dotenv
 
-# Start cron and keep the container running
-CMD ["cron", "-f"]
+# Create log directory and file
+RUN mkdir -p /var/log && touch /var/log/cron.log
+
+# Start cron and output logs
+CMD ["sh", "-c", "cron && tail -f /var/log/cron.log"]
